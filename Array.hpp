@@ -2,6 +2,7 @@
 #define ASSIGNMENT4_ARRAY_HPP
 
 #include <exception>
+#include <cstdio>
 
 namespace cs540
 {
@@ -24,15 +25,28 @@ namespace cs540
 			Array<T, Dims...> *array;
 			
 			//Default Constructor
-			Array()
+			Array() : array(new Array<T, Dims...>)
 			{
-		
+			    arraySize = 0;
+		        for(auto value: array)
+                {
+		            arraySize++;
+                }
+                static_assert(arraySize > 0);
 			}
 
 			//Copy Constructor
 			Array(const Array &toCopy)
 			{
-				
+                if(arraySize != toCopy.arraySize)
+                {
+                    printf("Error, mismatch in array size.\n");
+                    return;
+                }
+				for(std::size_t i = 0; i < arraySize; i++)
+                {
+				    array[i] = toCopy[i];
+                }
 			}
 
 			//Copy Consturctor (Templated)
@@ -43,26 +57,53 @@ namespace cs540
 			}
 
 			//Assignment Operator
-			Array &operator=(const Array &assignment)
+			Array& operator=(const Array &assignment)
 			{
-				return nullptr;
+				if(this != &assignment)
+                {
+				    if(arraySize != assignment.arraySize)
+                    {
+				        throw OutOfRange();
+                    }
+				    for(std::size_t i = 0; i < arraySize; i++)
+                    {
+				        array[i] = assignment[i];
+                    }
+                }
+				return *this;
 			}
 
 			//Assignment Operator (Templated)
 			template <typename U>
-			Array &operator=(const Array<U, Dims...> &)
+			Array& operator=(const Array<U, Dims...> &assignment)
 			{
-				return nullptr;
+			    if(this != assignment) {
+                    if (arraySize != assignment.arraySize) {
+                        throw OutOfRange();
+                    }
+                    for (std::size_t i = 0; i < arraySize; i++) {
+                        array[i] = assignment[i];
+                    }
+                }
+                return *this;
 			}
 
 			T &operator[](std::size_t i)
 			{
-				return nullptr;
+			    if(i >= arraySize)
+                {
+			        throw OutOfRange();
+                }
+				return array[i];
 			}
 			
-			const T &operator[](std::size_t i)
+			const T &operator[](std::size_t i) const
 			{
-				return nullptr;			
+			    if(i >= arraySize)
+                {
+			        throw OutOfRange();
+                }
+				return array[i];
 			}
 
 
@@ -70,22 +111,39 @@ namespace cs540
 
 			FirstDimensionMajorIterator fmbegin()
 			{
-
+                FirstDimensionMajorIterator it;
+                it.arrays = this;
+                it.isEndIndex = false;
+                it.lowOrderIterator = array[0].fmbegin();
+                return it;
 			}
 
 			FirstDimensionMajorIterator fmend()
 			{
-		
+		        FirstDimensionMajorIterator it;
+		        it.arrays = this;
+		        it.isEndIndex = true;
+		        it.lowOrderIterator = array[0].fmend();
+		        return it;
 			}
 
 			LastDimensionMajorIterator lmbegin()
 			{
-
+                LastDimensionMajorIterator it;
+                it.arrays = this;
+                it.isEndIndex = false;
+                it.lowOrderIterator = array[0].lmbegin();
+                return it;
 			}
 
 			LastDimensionMajorIterator lmend()
 			{
-			
+			    LastDimensionMajorIterator it;
+			    it.arrays = this;
+			    it.isEndIndex = true;
+			    it.lowOrderIterator = array[0].lmend();
+			    return it;
+
 			}
 
 			class FirstDimensionIterator	
@@ -100,7 +158,7 @@ namespace cs540
 	
 				FirstDimensionMajorIterator()
 				{
-			
+			        currentIndex = 0;
 				}
 
 				FirstDimensionMajorIterator(const FirstDimensionMajorIterator &toCopy)
@@ -150,12 +208,12 @@ namespace cs540
 
 				LastDimensionMajorIterator(const LastDimensionMajorIterator &toCopy)
 				{
-			
+			        
 				}
 				
-				LastDimensionMajorIterator(const LastDimensionMajorIterator &toAssign)
+				LastDimensionMajorIterator &operator=(const LastDimensionMajorIterator &toAssign)
 				{
-				
+				    return nullptr;
 				}
 				
 				bool operator==(const LastDimensionMajorIterator a, const LastDimensionMajorIterator b)
