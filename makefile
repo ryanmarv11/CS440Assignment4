@@ -1,4 +1,4 @@
-FLAGS = -std=c++11 -Wall -Wextra -pedantic -g
+FLAGS = -std=c++11 -Wall -Wextra -pedantic -g -fpermissive
 
 all: make_array
 
