@@ -3,11 +3,13 @@
  * nested FDMIt type, etc.
  */
 
-#include "Array.hpp"
+
 #include <iostream>
 #include <assert.h>
 #include <cstddef>
 #include <typeinfo>
+
+#include "Array.hpp"
 
 using namespace std;
 using cs540::Array;
